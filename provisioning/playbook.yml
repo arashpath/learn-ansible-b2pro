@@ -1,4 +1,12 @@
 ---
 - hosts: all
+  become: true
   tasks:
-    - ping:
+    - name: Make sure that we can connect to the machine
+      ping:
+    - name: Install PHP
+      apt: name=php5-cli state=present update_cache=yes
+    - name: Install nginx
+      apt: name=nginx state=present
+    - name: Install mySQL
+      apt: name=mysql-server-5.6 state=present
