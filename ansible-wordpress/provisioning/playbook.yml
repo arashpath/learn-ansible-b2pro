@@ -1,0 +1,73 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Make sure we can connect
+      ping:
+
+    # PHP
+    - name: Add the ondrej PHP PPA
+      apt_repository: repo='ppa:ondrej/php'
+    - name: Update the apt cache
+      apt: update_cache=yes cache_valid_time=3600
+    - name: Install PHP
+      apt: name={{item}} state=present
+      with_items:
+        - php
+        - php-fpm
+        - php-mysql
+        - php-xml
+    - name: Remove apache2
+      apt: name=apache2 state=absent
+
+    # MySQL
+    - name: Install MySQL
+      apt: name={{item}} state=present
+      with_items:
+        - mysql-server-5.6
+        - python-mysqldb
+    - name: Generate new root password
+      command: openssl rand -hex 7 creates=/root/.my.cnf
+      register: mysql_new_root_pass
+    # IF /root/.my.cnf doesn't exist
+    - debug: msg="New root password is {{ mysql_new_root_pass.stdout }}"
+      when: mysql_new_root_pass.changed 
+    # IF /root/.my.cnf exist
+    - debug: msg="No change to root password"
+      when: not mysql_new_root_pass.changed 
+    - name: Remove anonymous users
+      mysql_user: name="" state=absent
+      when: mysql_new_root_pass.changed
+    - name: Remove test database
+      mysql_db: name=test state=absent
+      when: mysql_new_root_pass.changed
+    - name: Update root password
+      mysql_user: name=root host={{item}} password={{mysql_new_root_pass.stdout}}
+      with_items:
+        - "{{ ansible_hostname }}"
+        - 127.0.0.1
+        - ::1
+        - localhost
+      when: mysql_new_root_pass.changed
+    - name: Creat my.cnf
+      template: src=templates/mysql/my.cnf dest=/root/.my.cnf
+      when: mysql_new_root_pass.changed
+    
+    # nginx
+    - name: Install nginx
+      apt: name=nginx state=present
+    - name: Start nginx
+      service: name=nginx state=started
+    - name: Creat nginx config
+      template: src=templates/nginx/default dest=/etc/nginx/sites-available/default
+      notify: restart nginx
+  
+    # Wordpress
+    - name: Copy wordpress.zip into tmp
+      copy: src=files/wordpress.zip dest=/tmp/wordpress.zip
+
+    ## FOR INFO ##
+
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted
