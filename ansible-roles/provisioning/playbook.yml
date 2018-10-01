@@ -1,5 +1,12 @@
 ---
 - hosts: all
   become: true
-  roles:
-    - mheap.wordpress
+  roles: 
+    - role: mheap.wordpress
+      database_name: michaelwp
+      database_user: michaelwp
+      database_password: bananas1837
+      wp_domain: book.example.com
+      initial_post_title: Hey There
+      initial_post_content: >
+        This is an example post. Change me to say something interesting.
