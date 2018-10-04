@@ -1,0 +1,8 @@
+---
+- hosts: all
+  roles:
+  - role: test.var
+  tasks:
+  - name: Check Active Variable
+    debug: msg="The Active Variable is {{my_var}} "
+    
