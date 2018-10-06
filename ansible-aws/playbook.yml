@@ -1,0 +1,15 @@
+---
+- name: Create AWS resources
+  hosts: all
+  connection: local
+  gather_facts: False
+  tasks:
+          - ec2:
+                  image: ami-76144b0a
+                  region: ap-southeast-1
+                  instance_type: t2.micro
+                  instance_tags:
+                          project: AnsibleScaling
+                  count_tag:
+                          project: AnsibleScaling
+                  exact_count: 0
