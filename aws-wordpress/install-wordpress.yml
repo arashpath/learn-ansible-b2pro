@@ -1,0 +1,7 @@
+---
+- name: install WordPress
+  hosts: all
+  become: true
+  tasks:
+          - ping:
+     

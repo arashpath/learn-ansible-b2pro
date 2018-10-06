@@ -1,0 +1,17 @@
+---
+- name: Manage AWS resources
+  hosts: all
+  connection: local
+  gather_facts: False
+  tasks:
+          - ec2:
+                  image: ami-0eb1f21bbd66347fe
+                  region: ap-southeast-1
+                  instance_type: t2.micro
+                  instance_tags:
+                          project: AnsibleWordPress
+                  count_tag:
+                          project: AnsibleWordPress
+                  exact_count: 1
+                  group: stg-grp
+                  key_name: aws-ansible
