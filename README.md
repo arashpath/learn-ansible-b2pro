@@ -1,7 +1,7 @@
 # learn-ansible-b2pro
 Learning from [Ansible From Beginner to Pro - Michael Heap](https://www.apress.com/us/book/9781484216606)
 
-## [See Wiki](https://github.com/arashpath/learn-ansible-b2pro.wiki.git)
+## [See Wiki](https://github.com/arashpath/learn-ansible-b2pro/wiki)
 
 
 ## Other People 2 watch on GIT
